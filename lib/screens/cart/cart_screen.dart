@@ -115,7 +115,7 @@ class CartScreen extends StatelessWidget {
           // Delete Button
           IconButton(
             onPressed: () => cart.remove(item.product.id),
-            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+            icon: const Icon(Icons.delete_outline, color: AppColors.primary,size: 30,),
           ),
         ],
       ),
@@ -161,7 +161,7 @@ class CartScreen extends StatelessWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFFF7A00),
-              minimumSize: const Size(double.infinity, 55),
+              minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             ),
             onPressed: () {},

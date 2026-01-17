@@ -16,4 +16,15 @@ class ProductProvider extends ChangeNotifier {
     loading = false;
     notifyListeners();
   }
+
+  Future<void>getAllProducts() async {
+    loading = true;
+    notifyListeners();
+
+    products = await _api.fetchAllProducts();
+
+    loading = false;
+    notifyListeners();
+  }
+  
 }

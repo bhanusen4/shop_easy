@@ -20,7 +20,7 @@ class _BannerCarouselState extends State<BannerCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
         CarouselSlider(
           options: CarouselOptions(
@@ -44,25 +44,30 @@ class _BannerCarouselState extends State<BannerCarousel> {
           }).toList(),
         ),
 
-        const SizedBox(height: 10),
+       // const SizedBox(height: 10),
 
         /// Indicators
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: banners.asMap().entries.map((entry) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: _currentIndex == entry.key ? 18 : 8,
-              height: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: _currentIndex == entry.key
-                    ? Theme.of(context).primaryColor
-                    : Colors.grey.shade400,
-              ),
-            );
-          }).toList(),
+        Positioned(
+          bottom: 10,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: banners.asMap().entries.map((entry) {
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: _currentIndex == entry.key ? 10 : 5,
+                height: 8,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: _currentIndex == entry.key
+                      ? Theme.of(context).primaryColor
+                      : Colors.grey.shade400,
+                ),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );

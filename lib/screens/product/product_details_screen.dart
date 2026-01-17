@@ -1,12 +1,10 @@
 import 'package:ecommerce/data/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/constants/app_colors.dart';
+ import '../../data/models/seller_model.dart';
 import '../../providers/cart_provider.dart';
 import '../../routes/app_routes.dart';
 
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   final ProductModel product;
@@ -14,6 +12,17 @@ class ProductDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+
+    final Map<int, SellerModel> sellerInfoMap = {
+      1: SellerModel(name: "Syed Noman", rating: 4.8, reviews: 320),
+      2: SellerModel(name: "Rahul Store", rating: 4.5, reviews: 210),
+      3: SellerModel(name: "Tech World", rating: 4.7, reviews: 540),
+      4: SellerModel(name: "Fashion Hub", rating: 4.3, reviews: 180),
+    };
+    final seller = sellerInfoMap[product.id] ??
+        SellerModel(name: "Verified Seller", rating: 4.5, reviews: 100);
+
     return Scaffold(
       backgroundColor: Colors.grey.shade100, // Background for the image area
       body: Stack(
@@ -59,24 +68,31 @@ class ProductDetailsScreen extends StatelessWidget {
                       const SizedBox(height: 16),
 
                       // Seller/Review Row
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
-                              CircleAvatar(radius: 12, backgroundColor: Colors.orange),
-                              SizedBox(width: 8),
-                              Text("Seller: Syed Noman", style: TextStyle(fontWeight: FontWeight.w500)),
+                              const CircleAvatar(radius: 12, backgroundColor: Colors.orange),
+                              const SizedBox(width: 8),
+                              Text(
+                                "Seller: ${seller.name}",
+                                style: const TextStyle(fontWeight: FontWeight.w500),
+                              ),
                             ],
                           ),
                           Row(
                             children: [
-                              Icon(Icons.star, color: Colors.orange, size: 20),
-                              Text(" 4.8 (320 Reviews)", style: TextStyle(color: Colors.grey)),
+                              const Icon(Icons.star, color: Colors.orange, size: 20),
+                              Text(
+                                " ${seller.rating} (${seller.reviews} Reviews)",
+                                style: const TextStyle(color: Colors.grey),
+                              ),
                             ],
-                          )
+                          ),
                         ],
                       ),
+
                       const SizedBox(height: 24),
 
                       const Text("Description", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),

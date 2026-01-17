@@ -17,6 +17,14 @@ class ApiService {
     return data.map((e) => ProductModel.fromJson(e)).toList();
   }
 
+  Future<List<ProductModel>> fetchAllProducts() async {
+    final res = await http.get(
+      Uri.parse(ApiConstants.products),
+    );
+    final data = jsonDecode(res.body) as List;
+    return data.map((e) => ProductModel.fromJson(e)).toList();
+  }
+
   Future<ProductModel> fetchProduct(int id) async {
     final res = await http.get(
       Uri.parse("${ApiConstants.products}/$id"),

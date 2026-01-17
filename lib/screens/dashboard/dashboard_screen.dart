@@ -1,6 +1,8 @@
+import 'package:ecommerce/core/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/utils/category_short_name.dart';
 import '../../core/widgets/banner_carousel.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/product_provider.dart';
@@ -69,17 +71,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
         filled: true,
         fillColor: AppColors.grey,
 
-        /// IMPORTANT: use suffix instead of suffixIcon
-        suffix: Padding(
-          padding: const EdgeInsets.only(right: 8),
+         suffixIcon: const Padding(
+          padding: EdgeInsets.only(right: 8),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: const [
+            children: [
               Text(
                 "|",
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 15,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
               SizedBox(width: 8),
@@ -93,8 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
 
         contentPadding: const EdgeInsets.symmetric(
-          vertical: 14, // key line
-          horizontal: 0,
+          vertical: 14,
         ),
 
         border: OutlineInputBorder(
@@ -105,6 +106,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+
+  final Map<String, IconData> categoryIcons = {
+    "electronics": Icons.electrical_services,
+    "jewelery": Icons.diamond,
+    "men's clothing": Icons.man,
+    "women's clothing": Icons.woman,
+  };
 
 
   Widget _categories() {
@@ -155,18 +163,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 },
                 child: Column(
                   children: [
-                    CircleAvatar(
-                      radius: 28,
-                      backgroundColor:
-                      isSelected ? AppColors.primary : AppColors.grey,
-                      child: Text(
-                        category[0].toUpperCase(),
-                        style: const TextStyle(color: Colors.white),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        border: Border.all(
+                          color: isSelected ? AppColors.primary : AppColors.darkGrey,
+                          width: isSelected ? 2 : 1,
+                        ),
                       ),
-                    ),
+                      child: Icon(
+                        categoryIcons[category] ?? Icons.category,
+                        color: isSelected ? AppColors.primary : AppColors.darkGrey,
+                        size: 26,
+                      ),
+                    )
+,
+
                     const SizedBox(height: 6),
                     Text(
-                      category,
+                      categoryShortName(category),
+
                       style: TextStyle(
                         fontWeight:
                         isSelected ? FontWeight.bold : FontWeight.normal,
@@ -208,12 +228,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              _selectedCategory!,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  categoryShortName(    _selectedCategory!),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+
+                ),    InkWell(
+                  onTap: (){
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.productList,
+
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Text(
+                      'See All Products',
+                      style: TextStyle(
+                        fontWeight:
+                        FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             GridView.builder(
@@ -238,87 +282,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       arguments: product,
                     );
                   },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100, // Light grey background like in image aa.png
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Stack(
-                      children: [
-                        // 1. Favorite Badge (Top Right)
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFFF7A00), // Your brand orange
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(20),
-                                bottomLeft: Radius.circular(15),
-                              ),
-                            ),
-                            child: const Icon(Icons.favorite_border, color: Colors.white, size: 18),
-                          ),
-                        ),
-
-                        // 2. Card Content
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Product Image
-                              Expanded(
-                                child: Center(
-                                  child: Hero(
-                                    tag: product.id,
-                                    child: Image.network(
-                                      product.image,
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-
-                              // Title
-                              Text(
-                                product.title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                              ),
-                              const SizedBox(height: 4),
-
-                              // Price and Color Dots Row
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "\$${product.price}",
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  // Color selection dots
-                                  Row(
-                                    children: [
-                                      _colorDot(Colors.black87),
-                                      _colorDot(Colors.redAccent),
-                                      _colorDot(const Color(0xFFFF7A00)),
-                                      _colorDot(Colors.blue),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  child: ProductCard(product: product,),
                 );
               },
             ),
@@ -327,28 +291,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       },
     );
   }
-  Widget _colorDot(Color color) {
-    return Container(
-      margin: const EdgeInsets.only(left: 2),
-      height: 8,
-      width: 8,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-      ),
-    );
-  }
+
   int _currentIndex = 0;
 
-// List of screens to navigate between
-  final List<Widget> _screens = [
-    const DashboardScreen(),
-    const CartScreen(),
-   ];
 
   Widget _bottomBar() {
     return BottomNavigationBar(
-      currentIndex: _currentIndex, // Tells Flutter which icon to highlight
+      currentIndex: _currentIndex,
       onTap: (index) {
         setState(() {
           _currentIndex = index;

@@ -29,9 +29,9 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case productList:
-        final category = settings.arguments as String;
+        //final category = settings.arguments as String;
         return MaterialPageRoute(
-          builder: (_) => ProductListScreen(category: category),
+          builder: (_) => ProductListScreen(),
         );
 
       case productDetails:
