@@ -6,8 +6,8 @@ import 'package:provider/provider.dart';
 import '../../providers/product_provider.dart';
 
 class ProductListScreen extends StatefulWidget {
-  // final String category;
-  const ProductListScreen({super.key, });
+  final String category;
+  const ProductListScreen({super.key, required this.category, });
 
   @override
   State<ProductListScreen> createState() => _ProductListScreenState();
@@ -17,7 +17,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ProductProvider>().getAllProducts();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProductProvider>().loadProducts(widget.category);
+    });
   }
 
   @override
@@ -26,7 +28,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
       appBar: AppBar(title: const Text("All Products")),
       body: Consumer<ProductProvider>(
         builder: (_, p, __) {
-          if (p.loading) {
+          if (p.loadingAll) {
             return const Center(child: CircularProgressIndicator());
           }
           return GridView.builder(
@@ -38,9 +40,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
               mainAxisSpacing: 15
 
             ),
-            itemCount: p.products.length,
+            itemCount: p.allProducts.length,
             itemBuilder: (_, i) {
-              final product = p.products[i];
+              final product = p.allProducts[i];
               return GestureDetector(
                 onTap: () {
                   Navigator.push(

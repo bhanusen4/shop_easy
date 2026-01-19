@@ -1,10 +1,10 @@
+import 'package:ecommerce/core/utils/category_short_name.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../data/models/cart_model.dart';
 import '../../providers/cart_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -76,47 +76,74 @@ class CartScreen extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  item.product.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.product.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () => cart.remove(item.product.id),
+                      child: const Icon(Icons.delete_outline, color: AppColors.primary,size: 28,),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
+             const SizedBox(height: 5),
                 Text(
-                  "\$${item.product.price}",
+                 categoryShortName( item.product.category),
                   style: const TextStyle(
-                    color: Color(0xFFFF7A00),
+                    color: AppColors.lightGrey,
                     fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                    fontSize: 15,
                   ),
+                ),
+                const SizedBox(height: 10),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "\$${item.product.price}",
+                      style: const TextStyle(
+                        color: AppColors.blackColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        _quantityBtn(Icons.remove, () => cart.decrement(item.product.id)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            item.qty.toString(),
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                        ),
+                        _quantityBtn(Icons.add, () => cart.increment(item.product.id)),
+                      ],
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 12),
 
                 // Horizontal Quantity Selector
-                Row(
-                  children: [
-                    _quantityBtn(Icons.remove, () => cart.decrement(item.product.id)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        item.qty.toString(),
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    ),
-                    _quantityBtn(Icons.add, () => cart.increment(item.product.id)),
-                  ],
-                ),
+
               ],
             ),
           ),
 
           // Delete Button
-          IconButton(
-            onPressed: () => cart.remove(item.product.id),
-            icon: const Icon(Icons.delete_outline, color: AppColors.primary,size: 30,),
-          ),
+
         ],
       ),
     );
@@ -147,13 +174,29 @@ class CartScreen extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          discountCodeField(),
+          const SizedBox(height: 8,),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Total", style: TextStyle(fontSize: 16, color: Colors.grey)),
+              const Text("Subtotal", style: TextStyle(fontSize: 16, color: AppColors.lightGrey,fontWeight: FontWeight.bold)),
               Text(
                 "\$${cart.total.toStringAsFixed(2)}",
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 8,),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Total", style: TextStyle(fontSize: 16, color: Colors.black87,fontWeight: FontWeight.bold)),
+              Text(
+                "\$${cart.total.toStringAsFixed(2)}",
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -171,5 +214,42 @@ class CartScreen extends StatelessWidget {
       ),
     );
   }
+  Widget discountCodeField() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color:Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.transparent),
+      ),
+      child: Row(
+        children: [
+          const Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "Enter Discount Code",
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: AppColors.lightGrey),
+                isDense: true,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+             },
+            child: const Text(
+              "Apply",
+              style: TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }
 

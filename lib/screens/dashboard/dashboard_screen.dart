@@ -4,10 +4,10 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/category_short_name.dart';
 import '../../core/widgets/banner_carousel.dart';
+import '../../providers/cart_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/product_provider.dart';
 import '../../routes/app_routes.dart';
-import '../cart/cart_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -23,8 +23,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     context.read<CategoryProvider>().loadCategories();
   }
-  String? _selectedCategory;
+  String _selectedCategory ='All';
   bool _initialized = false;
+
+
 
 
   @override
@@ -43,7 +45,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _searchBar(),
+            _searchBar(context),
             const SizedBox(height: 16),
             const BannerCarousel(),
             const SizedBox(height: 16),
@@ -56,48 +58,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _searchBar() {
+  Widget _searchBar(BuildContext context) {
     return TextField(
+      onChanged: (value) {
+        context.read<ProductProvider>().search(value);
+      },
       decoration: InputDecoration(
-        prefixIcon: const Icon(
-          Icons.search,
-          size: 20,
-          color: Colors.black,
-        ),
-
+        prefixIcon: const Icon(Icons.search, size: 20, color: Colors.black),
         hintText: "Search...",
         hintStyle: const TextStyle(color: Colors.grey),
-
         filled: true,
         fillColor: AppColors.grey,
-
-         suffixIcon: const Padding(
+        suffixIcon: const Padding(
           padding: EdgeInsets.only(right: 8),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                "|",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+              Text("|", style: TextStyle(color: Colors.black)),
               SizedBox(width: 8),
-              Icon(
-                Icons.filter_list,
-                size: 20,
-                color: Colors.black,
-              ),
+              Icon(Icons.filter_list, size: 20, color: Colors.black),
             ],
           ),
         ),
-
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 14,
-        ),
-
+        contentPadding: const EdgeInsets.symmetric(vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide.none,
@@ -107,7 +90,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
 
+
   final Map<String, IconData> categoryIcons = {
+    "all": Icons.dashboard,
     "electronics": Icons.electrical_services,
     "jewelery": Icons.diamond,
     "men's clothing": Icons.man,
@@ -176,7 +161,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ),
                       child: Icon(
-                        categoryIcons[category] ?? Icons.category,
+                        categoryIcons[category] ?? Icons.dashboard,
                         color: isSelected ? AppColors.primary : AppColors.darkGrey,
                         size: 26,
                       ),
@@ -243,13 +228,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Navigator.pushNamed(
                       context,
                       AppRoutes.productList,
+                      arguments: _selectedCategory, // Pass the string directly, not a Map
+
 
                     );
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Text(
-                      'See All Products',
+                      'See All',
                       style: TextStyle(
                         fontWeight:
                         FontWeight.normal,
@@ -301,6 +288,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       onTap: (index) {
         setState(() {
           _currentIndex = index;
+
         });
       },
       type: BottomNavigationBarType.fixed, // Keeps labels from shifting
@@ -308,9 +296,81 @@ class _DashboardScreenState extends State<DashboardScreen> {
       unselectedItemColor: Colors.grey,
       showSelectedLabels: false,
       showUnselectedLabels: false,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: "Home"),
-        BottomNavigationBarItem(icon: Icon(Icons.shopping_cart_outlined), activeIcon: Icon(Icons.shopping_cart), label: "Cart"),
+      items:   [
+        const BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: "Home"),
+
+
+        BottomNavigationBarItem(
+          label: "Cart",
+          icon: Consumer<CartProvider>(
+            builder: (_, cart, __) {
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  const Icon(Icons.shopping_cart_outlined),
+
+                  if (cart.items.length > 0)
+                    Positioned(
+                      right: -6,
+                      top: -6,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFF7A00),
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 18,
+                          minHeight: 18,
+                        ),
+                        child: Text(
+                          cart .items.length.toString(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+          activeIcon: Consumer<CartProvider>(
+            builder: (_, cart, __) {
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  const Icon(Icons.shopping_cart),
+
+                  if ( cart .items.length > 0)
+                    Positioned(
+                      right: -6,
+                      top: -6,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFF7A00),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          cart .items.length.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
+
         BottomNavigationBarItem(icon: Icon(Icons.favorite_border), activeIcon: Icon(Icons.favorite), label: "Fav"),
         BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: "Profile"),
       ],
