@@ -5,8 +5,12 @@ import '../models/product_model.dart';
 
 class ApiService {
   Future<List<String>> fetchCategories() async {
-    final res = await http.get(Uri.parse(ApiConstants.categories));
-    return List<String>.from(jsonDecode(res.body));
+    try {
+      final res = await http.get(Uri.parse(ApiConstants.categories));
+      return List<String>.from(jsonDecode(res.body));
+    }catch(e){
+      return[];
+    }
   }
 
   Future<List<ProductModel>> fetchProductsByCategory(String category) async {
