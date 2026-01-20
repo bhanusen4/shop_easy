@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class BannerCarousel extends StatefulWidget {
@@ -35,13 +36,16 @@ class _BannerCarouselState extends State<BannerCarousel> {
           items: banners.map((image) {
             return ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                image,
-                width: double.infinity,
-                fit: BoxFit.cover,
+              child: AspectRatio(
+                aspectRatio: 16 / 8,
+                child: Image.asset(
+                  image,
+                  fit: BoxFit.cover,
+                ),
               ),
             );
           }).toList(),
+
         ),
 
        // const SizedBox(height: 10),
@@ -57,13 +61,13 @@ class _BannerCarouselState extends State<BannerCarousel> {
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 width: _currentIndex == entry.key ? 10 : 5,
-                height: 8,
+                height: 6,
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(10),
                   color: _currentIndex == entry.key
-                      ? Theme.of(context).primaryColor
-                      : Colors.grey.shade400,
+                      ? AppColors.blackColor
+                      : Colors.grey.shade500,
                 ),
               );
             }).toList(),

@@ -3,6 +3,7 @@ import 'package:ecommerce/screens/product/product_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/utils/category_short_name.dart';
 import '../../providers/product_provider.dart';
 
 class ProductListScreen extends StatefulWidget {
@@ -25,10 +26,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("All Products")),
+      appBar: AppBar(title:   Text(capitalizeFirstLetter(widget.category))),
       body: Consumer<ProductProvider>(
         builder: (_, p, __) {
-          if (p.loadingAll) {
+          if (p.loading) {
             return const Center(child: CircularProgressIndicator());
           }
           return GridView.builder(
@@ -40,9 +41,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
               mainAxisSpacing: 15
 
             ),
-            itemCount: p.allProducts.length,
+            itemCount: p.products.length,
             itemBuilder: (_, i) {
-              final product = p.allProducts[i];
+              final product = p.products[i];
               return GestureDetector(
                 onTap: () {
                   Navigator.push(

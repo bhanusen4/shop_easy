@@ -17,7 +17,7 @@ class ProductProvider extends ChangeNotifier {
     _loading = true;
     notifyListeners();
 
-    if(category.toLowerCase()=='all') {
+
       if (category.toLowerCase() == 'all') {
         _masterList = await _api.fetchAllProducts();
       } else {
@@ -27,7 +27,7 @@ class ProductProvider extends ChangeNotifier {
       products = List.from(_masterList);
     _loading = false;
     notifyListeners();
-  }}
+  }
 
   Future<void>getAllProducts() async {
     _loadingAll = true;

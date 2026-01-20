@@ -31,6 +31,12 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   @override
+  void dispose() {
+    controller.dispose(); // Always dispose controllers!
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     final Animation<double> scaleAnimation = CurvedAnimation(
@@ -45,20 +51,20 @@ class _SplashScreenState extends State<SplashScreen>
           opacity: controller,
           child: ScaleTransition(
             scale: scaleAnimation,
-            child: const Column(
+            child:  Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.shopping_bag,size: 100,color: AppColors.primary,),
+                Image.asset('assets/logo/app_logo.png' ),
 
-                Text(
-                  "ShopEasy",
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.primary,
-                    letterSpacing: 1.5,
-                  ),
-                ),
+                // Text(
+                //   "ShopEasy",
+                //   style: TextStyle(
+                //     fontSize: 32,
+                //     fontWeight: FontWeight.w900,
+                //     color: AppColors.primary,
+                //     letterSpacing: 1.5,
+                //   ),
+               // ),
               ],
             ),
           ),

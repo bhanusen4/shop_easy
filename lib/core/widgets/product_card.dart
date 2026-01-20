@@ -1,3 +1,4 @@
+import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/data/models/product_model.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,7 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return  Container(
       decoration: BoxDecoration(
-        color: Colors.grey.shade100, // Light grey background like in image aa.png
+        color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Stack(
@@ -22,7 +23,7 @@ class ProductCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: const BoxDecoration(
-                color: Color(0xFFFF7A00), // Your brand orange
+                color: AppColors.primary, // Your brand orange
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20),
                   bottomLeft: Radius.circular(15),

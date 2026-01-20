@@ -1,4 +1,5 @@
 import 'package:ecommerce/core/widgets/product_card.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -21,9 +22,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<CategoryProvider>().loadCategories();
-  }
-  String _selectedCategory ='All';
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CategoryProvider>().loadCategories();
+    });
+   }
+  String? _selectedCategory;
   bool _initialized = false;
 
 
@@ -31,35 +34,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: _bottomBar(),
-      appBar: AppBar(
-        leading: const Icon(Icons.grid_view_rounded),
-        actions: const [
-          Icon(Icons.notifications_none),
-          SizedBox(width: 12),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _searchBar(context),
-            const SizedBox(height: 16),
-            const BannerCarousel(),
-            const SizedBox(height: 16),
-            _categories(),
-            const SizedBox(height: 16),
-            _specialForYou(context),
+    return GestureDetector(onTap:  ()=> FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        bottomNavigationBar: _bottomBar(),
+        appBar: AppBar(
+          leading: const Icon(Icons.grid_view_rounded),
+          actions: const [
+            Icon(Icons.notifications_none),
+            SizedBox(width: 12),
           ],
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _searchBar(context),
+              const SizedBox(height: 16),
+              const BannerCarousel(),
+              const SizedBox(height: 16),
+              _categories(),
+              const SizedBox(height: 16),
+              _specialForYou(context),
+            ],
+          ),
         ),
       ),
     );
   }
 
+
+
+  @override
+ void dispose(){
+    focusNode.dispose();
+    super.dispose();
+  }
+  FocusNode focusNode =FocusNode();
   Widget _searchBar(BuildContext context) {
     return TextField(
+      focusNode: focusNode,
+      autofocus: false,
       onChanged: (value) {
         context.read<ProductProvider>().search(value);
       },
@@ -74,7 +89,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("|", style: TextStyle(color: Colors.black)),
+              Text("|", style: TextStyle(color: Colors.black,fontSize: 15)),
               SizedBox(width: 8),
               Icon(Icons.filter_list, size: 20, color: Colors.black),
             ],
@@ -114,7 +129,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           return const Text("No categories found");
         }
 
-        /// 🔥 AUTO SELECT FIRST CATEGORY (only once)
         if (!_initialized) {
           _initialized = true;
           _selectedCategory = p.categories.first;
@@ -122,7 +136,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             context
                 .read<ProductProvider>()
-                .loadProducts(_selectedCategory!);
+                .loadProducts(_selectedCategory??'all');
           });
         }
 
@@ -145,7 +159,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   context
                       .read<ProductProvider>()
                       .loadProducts(category);
-                },
+
+                  focusNode.unfocus();
+                 },
                 child: Column(
                   children: [
                     AnimatedContainer(
@@ -192,11 +208,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _specialForYou(BuildContext context) {
     return Consumer<ProductProvider>(
       builder: (_, p, __) {
+        // if (_selectedCategory == null) {
+        //   return const Text(
+        //     "Select a category",
+        //     style: TextStyle(color: Colors.grey),
+        //   );
+        // }
+
         if (_selectedCategory == null) {
-          return const Text(
-            "Select a category",
-            style: TextStyle(color: Colors.grey),
-          );
+          return const SizedBox.shrink();
         }
 
         if (p.loading) {
@@ -205,8 +225,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Center(child: CircularProgressIndicator()),
           );
         }
-
-        if (p.products.isEmpty) {
+      else   if (p.products.isEmpty) {
           return const Text("No products found");
         }
 
@@ -217,7 +236,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  categoryShortName(    _selectedCategory!),
+                  categoryShortName(    _selectedCategory??'All'),
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -233,8 +252,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                     );
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
+                  child: const Padding(
+                    padding: EdgeInsets.only(right: 8.0),
                     child: Text(
                       'See All',
                       style: TextStyle(

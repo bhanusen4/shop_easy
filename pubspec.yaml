@@ -39,7 +39,9 @@ dependencies:
   provider: ^6.1.1
   carousel_slider: ^4.2.1
 
+
 dev_dependencies:
+  flutter_native_splash: ^2.4.1
   flutter_test:
     sdk: flutter
 
@@ -65,6 +67,9 @@ flutter:
   assets:
      - assets/images/
      - assets/banners/
+     - assets/logo/
+
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -92,3 +97,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/logo/app_logo.png
+  android_12:
+   image: assets/logo/app_logo.png
+   color: "#ffffff"
